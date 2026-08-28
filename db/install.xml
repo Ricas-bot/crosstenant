@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/crosstenant/db" VERSION="20260819" COMMENT="XMLDB file for Moodle local/crosstenant"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="local_crosstenant_access" COMMENT="Cross-tenant course access authorizations (EDUdigital, V1). User -&gt; Course only, never Tenant -&gt; Tenant.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Authorized user. Always a member of source_tenantid."/>
+        <FIELD NAME="source_tenantid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Derived from user.tenantid at grant time, never accepted from caller input."/>
+        <FIELD NAME="target_tenantid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Derived from the course context tenantid at grant time, never accepted from caller input."/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="roleid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Restricted in V1 to student/editingteacher only, enforced in authorization_manager::is_role_allowed()."/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="active" SEQUENCE="false" COMMENT="active | revoked | expired"/>
+        <FIELD NAME="reason" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timeexpires" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="NULL = no expiry"/>
+        <FIELD NAME="createdby" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timerevoked" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="revokedby" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid_fk" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="courseid_fk" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+        <KEY NAME="source_tenantid_fk" TYPE="foreign" FIELDS="source_tenantid" REFTABLE="tenant" REFFIELDS="id"/>
+        <KEY NAME="target_tenantid_fk" TYPE="foreign" FIELDS="target_tenantid" REFTABLE="tenant" REFFIELDS="id"/>
+        <KEY NAME="roleid_fk" TYPE="foreign" FIELDS="roleid" REFTABLE="role" REFFIELDS="id"/>
+        <KEY NAME="createdby_fk" TYPE="foreign" FIELDS="createdby" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="revokedby_fk" TYPE="foreign" FIELDS="revokedby" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <!-- Secção 8: consulta rápida userid+courseid+status, e courseid+status.
+             Unicidade de "uma única autorização active por userid+courseid" NÃO
+             é feita por índice único aqui (colidiria com o histórico de
+             revoked/expired do mesmo par) — é garantida de forma transacional
+             em authorization_manager::grant(), conforme a própria secção 8
+             permite ("ou garantir a unicidade através de serviço transacional"). -->
+        <INDEX NAME="userid_courseid_status" UNIQUE="false" FIELDS="userid, courseid, status"/>
+        <INDEX NAME="courseid_status" UNIQUE="false" FIELDS="courseid, status"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>

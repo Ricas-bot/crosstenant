@@ -1,0 +1,94 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_crosstenant/access_list
+
+    Tabela de autorizações cross-tenant de um curso (secção 31 do prompt
+    de implementação: "Authorized users - User, Source tenant, Role,
+    Granted, Expires, Status, Actions").
+
+    Context variables required for this template:
+    * rows - array de autorizações já formatadas para apresentação
+    * hasrows - bool
+    * canmanage - bool, se o utilizador atual pode revogar
+
+    Example context (json):
+    {
+        "hasrows": true,
+        "canmanage": true,
+        "rows": [
+            {
+                "userid": 23,
+                "fullname": "João Silva",
+                "sourcetenant": "Empresa A",
+                "role": "Learner",
+                "granted": "19/08/2026 10:00",
+                "expires": "-",
+                "status": "active",
+                "statuslabel": "Ativa",
+                "canrevoke": true,
+                "reason": "Formação obrigatória"
+            }
+        ]
+    }
+}}
+<div class="local-crosstenant-access-list" data-region="crosstenant-list">
+    <h3>{{#str}}authorizedusers, local_crosstenant{{/str}}</h3>
+
+    {{^hasrows}}
+        <p class="text-muted">{{#str}}noauthorizations, local_crosstenant{{/str}}</p>
+    {{/hasrows}}
+
+    {{#hasrows}}
+    <table class="generaltable" data-region="crosstenant-table">
+        <thead>
+            <tr>
+                <th>{{#str}}user, local_crosstenant{{/str}}</th>
+                <th>{{#str}}sourcetenant, local_crosstenant{{/str}}</th>
+                <th>{{#str}}role, local_crosstenant{{/str}}</th>
+                <th>{{#str}}granted, local_crosstenant{{/str}}</th>
+                <th>{{#str}}expires, local_crosstenant{{/str}}</th>
+                <th>{{#str}}status, local_crosstenant{{/str}}</th>
+                {{#canmanage}}<th>{{#str}}actions, local_crosstenant{{/str}}</th>{{/canmanage}}
+            </tr>
+        </thead>
+        <tbody>
+            {{#rows}}
+            <tr data-userid="{{userid}}">
+                <td>{{fullname}}</td>
+                <td>{{sourcetenant}}</td>
+                <td>{{role}}</td>
+                <td>{{granted}}</td>
+                <td>{{expires}}</td>
+                <td><span class="badge badge-pill badge-{{status}}">{{statuslabel}}</span></td>
+                {{#canmanage}}
+                <td>
+                    {{#canrevoke}}
+                    <button type="button" class="btn btn-sm btn-outline-danger"
+                            data-action="revoke" data-userid="{{userid}}" data-fullname="{{fullname}}"
+                            data-sourcetenant="{{sourcetenant}}">
+                        {{#str}}revoke, local_crosstenant{{/str}}
+                    </button>
+                    {{/canrevoke}}
+                </td>
+                {{/canmanage}}
+            </tr>
+            {{/rows}}
+        </tbody>
+    </table>
+    {{/hasrows}}
+</div>

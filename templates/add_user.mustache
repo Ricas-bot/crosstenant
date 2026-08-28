@@ -1,0 +1,76 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_crosstenant/add_user
+
+    Painel "Add user" (secção 16/32 do prompt de implementação):
+    pesquisa de utilizadores de outro tenant, seguida de papel/expiração/
+    motivo, antes da confirmação (feita em JS via modal, não aqui).
+
+    Toda a interatividade é feita por amd/src/manage.js — este template
+    só define a estrutura estática e os data-region/data-action que o
+    JS usa para se ligar.
+
+    Context variables required for this template:
+    * courseid - int
+
+    Example context (json):
+    { "courseid": 18 }
+}}
+<div class="local-crosstenant-add-user mt-4" data-region="crosstenant-add" data-courseid="{{courseid}}">
+    <h3>{{#str}}addusertitle, local_crosstenant{{/str}}</h3>
+
+    <div class="form-group">
+        <label for="crosstenant-search-input">{{#str}}searchuser, local_crosstenant{{/str}}</label>
+        <input type="text" id="crosstenant-search-input" class="form-control"
+               data-region="crosstenant-search-input" autocomplete="off"
+               placeholder="{{#str}}searchuserplaceholder, local_crosstenant{{/str}}">
+        <div data-region="crosstenant-search-results" class="list-group mt-1"></div>
+    </div>
+
+    <div data-region="crosstenant-grant-form" style="display:none;">
+        <input type="hidden" data-region="crosstenant-selected-userid">
+        <input type="hidden" data-region="crosstenant-selected-tenant">
+        <p><strong data-region="crosstenant-selected-label"></strong></p>
+
+        <div class="form-group">
+            <label for="crosstenant-role">{{#str}}role, local_crosstenant{{/str}}</label>
+            <select id="crosstenant-role" class="form-control" data-region="crosstenant-role">
+                <option value="student">{{#str}}learner, local_crosstenant{{/str}}</option>
+                <option value="editingteacher">{{#str}}editingteacher, local_crosstenant{{/str}}</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="crosstenant-expires">{{#str}}expires, local_crosstenant{{/str}}</label>
+            <input type="date" id="crosstenant-expires" class="form-control" data-region="crosstenant-expires">
+            <small class="form-text text-muted">{{#str}}expireshelp, local_crosstenant{{/str}}</small>
+        </div>
+
+        <div class="form-group">
+            <label for="crosstenant-reason">{{#str}}reason, local_crosstenant{{/str}}</label>
+            <textarea id="crosstenant-reason" class="form-control" data-region="crosstenant-reason" rows="2"></textarea>
+        </div>
+
+        <button type="button" class="btn btn-primary" data-action="grant">
+            {{#str}}grantaccess, local_crosstenant{{/str}}
+        </button>
+        <button type="button" class="btn btn-secondary" data-action="cancel-grant">
+            {{#str}}cancel, core{{/str}}
+        </button>
+    </div>
+</div>
