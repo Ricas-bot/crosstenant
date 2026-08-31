@@ -1,8 +1,8 @@
-# local_crosstenant — Cross-Tenant Course Access (V1)
+# local_crosstenant - Cross-Tenant Course Access (V1)
 
 **Estado atual: Fase 9 concluída (secção 65 do prompt de implementação) — aguarda validação no vosso ambiente.**
 
-## Fase 9 — eventos e privacy
+## Fase 9 - eventos e privacy
 
 **Eventos** (secção 25/35): `access_granted`, `access_revoked`,
 `access_expired`, ligados aos placeholders vazios que já existiam em
@@ -76,7 +76,7 @@ para um patch sem primeiro correr
 confirmar a dimensão real do problema, seguindo o mesmo processo
 disciplinado da Fase 1.
 
-## Fase 8 — UI administrativa
+## Fase 8 - UI administrativa
 
 **Aviso honesto antes de tudo:** esta fase foi escrita sem acesso a um
 browser real para verificar a renderização. Os padrões usados (Mustache,
@@ -136,7 +136,7 @@ função depois de correres a atualização.
 5. Clicar "Revogar" numa linha, confirmar o modal (secção 33), confirmar
    que o estado muda para "Revogada".
 
-## Fase 7 — scheduled task
+## Fase 7 - scheduled task
 
 Peça pequena, como esperado — a lógica (`expire_due()`) já existia e já
 estava testada desde a Fase 2/4. `classes/task/process_expirations.php`
@@ -160,7 +160,7 @@ php admin/cli/scheduled_task.php --execute='\local_crosstenant\task\process_expi
 registada (leitura apenas).
 
 
-## Fase 6 — Revoke
+## Fase 6 - Revoke
 
 A maior parte da revogação já tinha sido construída sem se esperar por
 esta fase — `authorization_manager::revoke()` (Fase 2), remoção de
@@ -180,7 +180,7 @@ encontre — a intenção explícita de um humano tem de ter sempre efeito.
 correto de `timerevoked`/`revokedby`. `cli/verify_manual.php` também
 passou a testar este cenário especificamente (passo 6b).
 
-## Fase 5 — acesso real dentro do curso (atividades, ficheiros)
+## Fase 5 - acesso real dentro do curso (atividades, ficheiros)
 
 Esta fase encontrou uma lacuna de arquitetura real, não só confirmou o
 que já existia: `access_manager::can_access()` só autorizava contexto de
@@ -215,7 +215,7 @@ causa raiz identificada na análise inicial. Um teste manual completo com
 um utilizador real, um PDF real e um quiz real continua a valer a pena
 antes de dar a V1 como pronta para produção.
 
-## Fase 4 — Enrolment Manager: inscrição real
+## Fase 4 - Enrolment Manager: inscrição real
 
 `grant()` e `revoke()` já não só mexem na tabela do plugin — agora
 produzem/removem uma inscrição real, através da API oficial de
@@ -244,7 +244,7 @@ agora cria uma inscrição real, ainda que breve. Confirma que o envio de
 email está desligado/redirecionado neste QA — o script avisa isto no
 `--help`, mas não consegue verificar a configuração de email por ti.
 
-## Fase 3 — capabilities + fronteira de segurança real
+## Fase 3 - capabilities + fronteira de segurança real
 
 A partir desta fase, `authorization_manager` deixa de ser a fronteira de
 segurança — passa a ser `classes/external/`. As três funções ligam-se ao
@@ -252,17 +252,17 @@ dispatcher AJAX/webservice nativo do Moodle/Totara (`db/services.php`,
 `ajax => true`), o que dá sesskey e validação de contexto "de borla",
 sem código de segurança escrito à mão (secção 39/41).
 
-- `local/crosstenant:view`, `:grantaccess`, `:revokeaccess` — `db/access.php`,
+- `local/crosstenant:view`, `:grantaccess`, `:revokeaccess` - `db/access.php`,
   contexto de curso, arquétipos por defeito conservadores (só `manager`
   concede/revoga; `manager`+`editingteacher` podem ver). Ajustável por
   overrides de role no site, sem alterar código.
 - `classes/external/grant_access.php`, `revoke_access.php`,
-  `get_authorizations.php` — cada um: `validate_parameters()` →
+  `get_authorizations.php` - cada um: `validate_parameters()` →
   `validate_context()` → `require_capability()` → só depois chama o
   serviço. Nenhum aceita `source_tenantid`/`target_tenantid` como
   parâmetro — estruturalmente impossível fazer spoof de tenant por esta
   via (secção 42).
-- `tests/external_test.php` — prova que sem a capability certa, cada
+- `tests/external_test.php` - prova que sem a capability certa, cada
   função lança `required_capability_exception`; com a capability, o
   acesso real muda (não é só um registo em BD parado).
 
@@ -277,15 +277,15 @@ grep -rn "class.*extends.*external_api" local/ enrol/ mod/assign/classes/externa
 ```
 Se vires resultados a usar exatamly este padrão (`extends
 \external_api` ou `extends external_api`, sem namespace `core_external`),
-está confirmado — é o que este código já assume.
+está confirmado - é o que este código já assume.
 
 ## Registo de validação da Fase 7
 
-**2026-08-19, ambiente QA (`s5602pfcoa-qa`)** — `cli/verify_manual.php --confirm`,
+**2026-08-19, ambiente QA (`s5602pfcoa-qa`)** - `cli/verify_manual.php --confirm`,
 depois de `admin/cli/upgrade.php` para o Totara conhecer a task nova:
 
 ```
-[PASS] Fase 7 — scheduled task process_expirations está registada
+[PASS] Fase 7 - scheduled task process_expirations está registada
 ```
 
 20/20 no total. Registo confirmado com `\core\task\manager::get_scheduled_task()`
@@ -297,29 +297,29 @@ real, não só pela existência do ficheiro.
 mesmos dados reais (userid=23, courseid=18):
 
 ```
-[PASS] Fase 6 — linha ainda "active" na BD antes do revoke explícito
-[PASS] Fase 6 — revoke() tem efeito sobre autorização já logicamente expirada
-[PASS] Fase 6 — linha passou a "revoked", não ficou "active" esquecida
+[PASS] Fase 6 - linha ainda "active" na BD antes do revoke explícito
+[PASS] Fase 6 - revoke() tem efeito sobre autorização já logicamente expirada
+[PASS] Fase 6 - linha passou a "revoked", não ficou "active" esquecida
 ```
 
 19/19 no total. Confirmado com dados reais que a correção resolve
-exatamente o cenário identificado — uma linha que ficaria presa em
+exatamente o cenário identificado - uma linha que ficaria presa em
 `active` sem este ajuste.
 
 ## Registo de validação da Fase 5
 
-**2026-08-19, ambiente QA (`s5602pfcoa-qa`)** — `cli/verify_manual.php --confirm`,
+**2026-08-19, ambiente QA (`s5602pfcoa-qa`)** - `cli/verify_manual.php --confirm`,
 mesmos dados reais (userid=23, courseid=18), com um módulo real do curso
 (cmid=18) incluído nas verificações:
 
 ```
-[PASS] Fase 5 — módulo real (cmid=18) do curso: acesso permitido
-[PASS] Fase 5 — depois do revoke: módulo real (cmid=18) volta a bloqueado
+[PASS] Fase 5 - módulo real (cmid=18) do curso: acesso permitido
+[PASS] Fase 5 - depois do revoke: módulo real (cmid=18) volta a bloqueado
 ```
 
 16/16 no total (as 14 anteriores + estas 2). Confirma, com dados de
 produção-espelhada, que a correção da lacuna de `context_module` funciona
-de facto — não só nos testes sintéticos do PHPUnit.
+de facto - não só nos testes sintéticos do PHPUnit.
 
 **Ainda em aberto antes de fechar esta fase por completo:** o smoke test
 manual no browser (download real de um ficheiro, idealmente PDF, dentro
@@ -335,9 +335,9 @@ dados reais (userid=23, courseid=18, tenant "DREAE" / "DREAE / EBI Arrifes"):
 ```
 [PASS] Antes do grant: acesso bloqueado
 [PASS] Antes do grant: sem inscrição
-[PASS] Teste C — depois do grant: acesso permitido
+[PASS] Teste C - depois do grant: acesso permitido
 [PASS] Depois do grant: existe inscrição real
-[PASS] Idempotência — segundo grant devolve o mesmo id, não cria duplicado
+[PASS] Idempotência - segundo grant devolve o mesmo id, não cria duplicado
 [PASS] Depois do revoke: acesso volta a bloqueado
 [PASS] Depois do revoke: inscrição removida
 [PASS] Grant com papel "manager" é rejeitado
@@ -352,13 +352,13 @@ Instância de inscrição dedicada removida (foi criada por este script e ficou 
 14/14. Três problemas reais encontrados e corrigidos nesta fase, por
 esta ordem:
 
-1. `enrol_manual` só permite **uma** instância por curso — `can_add_instance()`
+1. `enrol_manual` só permite **uma** instância por curso - `can_add_instance()`
    devolve `false` se já existir uma (e este site tem sempre uma). Trocado
    para `enrol_self`, confirmado a suportar múltiplas instâncias por curso
    neste ambiente antes de reescrever o código (`cli/diagnose_enrol.php`).
 2. Tipos `int`/`string` inconsistentes vindos da camada de BD (mesma classe
    de bug já apanhada na Fase 2).
-3. `cli/verify_manual.php` não tinha utilizador autenticado na sessão CLI —
+3. `cli/verify_manual.php` não tinha utilizador autenticado na sessão CLI -
    `can_add_instance()` falhava sempre contra um `$USER` anónimo, mesmo com
    o admin real a ter todas as capabilities. `diagnose_enrol.php` já fazia
    `\core\session\manager::set_user(get_admin())` corretamente; faltava no
@@ -366,14 +366,14 @@ esta ordem:
 
 ## Registo de validação da Fase 2
 
-**2026-08-19, ambiente QA (`s5602pfcoa-qa`)** — `cli/verify_manual.php --confirm`,
+**2026-08-19, ambiente QA (`s5602pfcoa-qa`)** - `cli/verify_manual.php --confirm`,
 dados reais (userid=23, courseid=18, tenant "DREAE" / "DREAE / EBI Arrifes"):
 
 ```
 [PASS] local_crosstenant regista o callback crosstenant_access_check
 [PASS] Antes do grant: acesso bloqueado
-[PASS] Teste C — depois do grant: acesso permitido
-[PASS] Idempotência — segundo grant devolve o mesmo id, não cria duplicado
+[PASS] Teste C - depois do grant: acesso permitido
+[PASS] Idempotência - segundo grant devolve o mesmo id, não cria duplicado
 [PASS] Depois do revoke: acesso volta a bloqueado
 [PASS] Grant com papel "manager" é rejeitado
 [PASS] Autorização já expirada: acesso bloqueado
@@ -383,7 +383,7 @@ dados reais (userid=23, courseid=18, tenant "DREAE" / "DREAE / EBI Arrifes"):
 8/8. Nota técnica arquivada: a primeira corrida falhou por comparação
 estrita (`===`/`in_array(..., true)`) entre valores `int` e `string`
 devolvidos pela camada de BD (`get_fieldset_select()`/`get_field()`
-nem sempre devolvem `int`) — corrigido em `authorization_manager.php`
+nem sempre devolvem `int`) - corrigido em `authorization_manager.php`
 com normalização explícita de tipos em `is_role_allowed()`,
 `get_user_tenantid()`, `get_course_tenantid()` e
 `get_active_authorization()`.
@@ -391,65 +391,65 @@ com normalização explícita de tipos em `is_role_allowed()`,
 Isto é um esqueleto ainda sem UI, não um plugin pronto a usar por
 administradores finais. Ainda não existe:
 
-- UI (Fase 8) — mas a partir de agora a UI só precisa de chamar as três
+- UI (Fase 8) - mas a partir de agora a UI só precisa de chamar as três
   funções de `db/services.php` via JS; toda a segurança e a inscrição
   real já estão feitas
-- Eventos e auditoria (Fase 10) — os pontos de disparo existem como
+- Eventos e auditoria (Fase 10) - os pontos de disparo existem como
   placeholders vazios em `authorization_manager`
 - Privacy provider (Fase 11)
 
 O que já existe e está implementado até esta fase:
 
-- `db/install.xml` — tabela `local_crosstenant_access`
-- `db/access.php` — capabilities `view`/`grantaccess`/`revokeaccess`
-- `db/services.php` — registo das 3 funções externas, com `ajax => true`
-- `db/tasks.php` — registo da scheduled task de expiração
-- `classes/service/authorization_manager.php` — `grant()`, `revoke()`,
+- `db/install.xml` - tabela `local_crosstenant_access`
+- `db/access.php` - capabilities `view`/`grantaccess`/`revokeaccess`
+- `db/services.php` - registo das 3 funções externas, com `ajax => true`
+- `db/tasks.php` - registo da scheduled task de expiração
+- `classes/service/authorization_manager.php` - `grant()`, `revoke()`,
   `expire_due()`, `is_authorized()`, `get_active_authorization()`,
-  `is_role_allowed()` — agora também aciona `enrolment_manager`
+  `is_role_allowed()` - agora também aciona `enrolment_manager`
 - `classes/service/access_manager.php` — `can_access()`, chamado pelo
   extension point
-- `classes/service/enrolment_manager.php` — `ensure_enrolment()`,
+- `classes/service/enrolment_manager.php` - `ensure_enrolment()`,
   `remove_plugin_enrolment()`, `has_independent_enrolment()`, via
   instância de inscrição manual dedicada por curso
 - `classes/external/grant_access.php`, `revoke_access.php`,
-  `get_authorizations.php`, `search_users.php` — fronteira de segurança
+  `get_authorizations.php`, `search_users.php` - fronteira de segurança
   capability-gated
-- `classes/task/process_expirations.php` — scheduled task, chama
+- `classes/task/process_expirations.php` - scheduled task, chama
   `expire_due()`
-- `lib.php` — `local_crosstenant_crosstenant_access_check()`, o callback
+- `lib.php` - `local_crosstenant_crosstenant_access_check()`, o callback
   que liga este plugin ao patch documentado em
   `deployment/patches/totara-19/CORE_PATCH.md`
-- `lang/en/` + `lang/pt/` — mantidos em sincronia a partir da Fase 3
-- `tests/extension_point_test.php` — PHPUnit, Fase 2 (serviço, sem capability)
-- `tests/external_test.php` — PHPUnit, Fase 3 (fronteira de segurança)
-- `tests/enrolment_test.php` — PHPUnit, Fase 4 (inscrição real,
+- `lang/en/` + `lang/pt/` - mantidos em sincronia a partir da Fase 3
+- `tests/extension_point_test.php` - PHPUnit, Fase 2 (serviço, sem capability)
+- `tests/external_test.php` - PHPUnit, Fase 3 (fronteira de segurança)
+- `tests/enrolment_test.php` - PHPUnit, Fase 4 (inscrição real,
   preservação de inscrição independente, limpeza na expiração)
-- `tests/module_access_test.php` — PHPUnit, Fase 5 (contexto de módulo,
+- `tests/module_access_test.php` - PHPUnit, Fase 5 (contexto de módulo,
   ficheiros/atividades, guardas de âmbito)
-- `tests/revoke_test.php` — PHPUnit, Fase 6 (revogação de autorização
+- `tests/revoke_test.php` - PHPUnit, Fase 6 (revogação de autorização
   logicamente expirada mas não varrida, idempotência, registo de auditoria)
-- `tests/task_test.php` — PHPUnit, Fase 7 (registo e execução da task)
-- `tests/search_users_test.php` — PHPUnit, Fase 8 (exclusão de
+- `tests/task_test.php` - PHPUnit, Fase 7 (registo e execução da task)
+- `tests/search_users_test.php` - PHPUnit, Fase 8 (exclusão de
   utilizadores do mesmo tenant, capability, curso sem tenant)
-- `cli/verify_manual.php` — equivalente sem PHPUnit às Fases 2-7,
+- `cli/verify_manual.php` - equivalente sem PHPUnit às Fases 2-7,
   self-cleaning, **nunca correr em produção** (não cobre a UI —
   ver checklist de verificação visual acima)
-- `cli/diagnose_enrol.php` — diagnóstico read-only de enrolment (útil se
+- `cli/diagnose_enrol.php` - diagnóstico read-only de enrolment (útil se
   mudar de mecanismo de inscrição outra vez no futuro)
 
 ## Regras de arquitetura que este código respeita
 
-- `source_tenantid`/`target_tenantid` nunca vêm de input do chamador —
+- `source_tenantid`/`target_tenantid` nunca vêm de input do chamador -
   são sempre derivados do utilizador e do curso reais em
   `authorization_manager` (secção 17/42), e nem sequer existem como
   parâmetro aceite nas funções externas.
 - A autorização é sempre `User -> Course`, nunca `User -> Tenant` nem
-  `Tenant -> Tenant` (secção 2/26/58) — `access_manager::can_access()`
+  `Tenant -> Tenant` (secção 2/26/58) - `access_manager::can_access()`
   recusa qualquer contexto que não seja `context_course`.
 - Papéis permitidos em V1: `student` (Learner) e `editingteacher`
-  (secção 21) — qualquer outro é rejeitado em `is_role_allowed()`,
-  mesmo por um ator com `grantaccess` (secção 9/21 — ter capability
+  (secção 21) - qualquer outro é rejeitado em `is_role_allowed()`,
+  mesmo por um ator com `grantaccess` (secção 9/21 - ter capability
   não basta para escolher um papel privilegiado).
 - Capability nunca é decorativa: `grant_access`/`revoke_access`/
   `get_authorizations` validam sempre no servidor, nunca confiam num
@@ -461,9 +461,4 @@ O que já existe e está implementado até esta fase:
 
 ## Próximos passos (não implementados ainda)
 
-Fase 9 (eventos/privacy), Fase 10 (testes de segurança — nomeadamente os
-da secção 39-42: IDOR, CSRF, tenant spoofing, agora com uma UI real para
-testar), Fase 11 (upgrade/rollback do próprio plugin) — por esta ordem,
-conforme a secção 65 do prompt de implementação. Continua a recomendar-se
-o smoke test manual no browser (secção 60/61) — agora pode ser feito
-através da própria UI desta fase, em vez de scripts CLI.
+Fase 10 (testes de segurança — secção 39-42: IDOR, CSRF, tenant spoofing, agora com uma UI real para testar), Fase 11 (upgrade/rollback do próprio plugin) — por esta ordem, conforme a secção 65 do prompt de implementação. O achado do Registo de Formação (ver acima) fica deliberadamente de fora, por decisão explícita, até haver disponibilidade para o investigar com calma.
