@@ -27,7 +27,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_crosstenant';
-$plugin->version   = 2026082800;   // YYYYMMDDXX
+$plugin->version   = 2026083100;   // YYYYMMDDXX
 $plugin->requires  = 2020061500; // Moodle 3.9
 $plugin->maturity  = MATURITY_ALPHA;
-$plugin->release   = 'V1 - Fase 8 (UI administrativa no curso)';
+$plugin->release   = 'V1 - Fase 8 (UI administrativa no curso) - testada manualmente em QA';

@@ -72,3 +72,23 @@ $string['confirmgranttitle'] = 'Grant cross-tenant access?';
 $string['confirmgrantbody'] = 'Grant cross-tenant access to {$a->user} from tenant {$a->tenant}? This will create a dedicated enrolment instance for the course, and the user will be enrolled with the role of {$a->role}.';
 $string['confirmrevoketitle'] = 'Revoke access?';
 $string['confirmrevokebody'] = 'Revoke cross-tenant access for {$a->user} from tenant {$a->tenant}? Their tenant membership is not affected.';
+
+// Audit events
+$string['event_access_granted'] = 'Cross-tenant access granted';
+$string['event_access_revoked'] = 'Cross-tenant access revoked';
+
+// Privacy API metadata for GDPR compliance. 
+$string['privacy:metadata:local_crosstenant_access'] = 'The local_crosstenant_access table stores information about cross-tenant access grants for courses.';
+$string['privacy:metadata:local_crosstenant_access:userid'] = 'The user ID of the user who has been granted cross-tenant access to a course.';
+$string['privacy:metadata:local_crosstenant_access:source_tenantid'] = 'The tenant ID of the user who has been granted cross-tenant access to a course.';
+$string['privacy:metadata:local_crosstenant_access:target_tenantid'] = 'The tenant ID of the course to which cross-tenant access has been granted.';
+$string['privacy:metadata:local_crosstenant_access:courseid'] = 'The course ID to which cross-tenant access has been granted.';
+$string['privacy:metadata:local_crosstenant_access:roleid'] = 'The role ID of the user who has been granted cross-tenant access to a course.';
+$string['privacy:metadata:local_crosstenant_access:status'] = 'The status of the cross-tenant access grant.';
+$string['privacy:metadata:local_crosstenant_access:reason'] = 'The reason for the cross-tenant access grant.';
+$string['privacy:metadata:local_crosstenant_access:timecreated'] = 'The time when the cross-tenant access grant was created.';
+$string['privacy:metadata:local_crosstenant_access:timemodified'] = 'The time when the cross-tenant access grant was modified.';
+$string['privacy:metadata:local_crosstenant_access:timeexpires'] = 'The time when the cross-tenant access grant expires.';
+$string['privacy:metadata:local_crosstenant_access:createdby'] = 'The user ID of the user who created the cross-tenant access grant.';
+$string['privacy:metadata:local_crosstenant_access:timerevoked'] = 'The time when the cross-tenant access grant was revoked.';
+$string['privacy:metadata:local_crosstenant_access:revokedby'] = 'The user ID of the user who revoked the cross-tenant access grant.';

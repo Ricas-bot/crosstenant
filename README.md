@@ -1,6 +1,34 @@
 # local_crosstenant — Cross-Tenant Course Access (V1)
 
-**Estado atual: Fase 8 concluída (secção 65 do prompt de implementação) — precisa de verificação visual no browser, ao contrário de todas as fases anteriores.**
+**Estado atual: Fase 9 concluída (secção 65 do prompt de implementação) — aguarda validação no vosso ambiente.**
+
+## Fase 9 — eventos e privacy
+
+**Eventos** (secção 25/35): `access_granted`, `access_revoked`,
+`access_expired`, ligados aos placeholders vazios que já existiam em
+`authorization_manager`. Cada um regista quem foi autorizado
+(`relateduserid`) e quem agiu (`userid`) — com uma distinção importante:
+no evento de expiração, `userid = 0`, porque é a scheduled task a agir,
+não uma pessoa. Todos incluem `source_tenantid`/`target_tenantid` em
+`other`, e nenhum rebenta se o curso entretanto tiver sido eliminado
+(`IGNORE_MISSING` antes de disparar — secção 36). Para verificar depois
+de conceder/revogar na UI: *Site administration → Reports → Logs*,
+filtrar pelo componente deste plugin.
+
+**Privacy provider** (secção 29): implementa exportação e eliminação
+GDPR. Decisão de política a validar com o cliente — em vez de apagar a
+linha inteira quando alguém pede eliminação dos seus dados, o campo que
+identifica essa pessoa especificamente (`userid`, `createdby` ou
+`revokedby`, conforme o papel que ocupava) é anonimizado, preservando o
+registo de auditoria em si ("alguém foi autorizado, por quem, quando,
+porquê") sem manter a identidade de quem pediu o apagamento. Três
+pessoas diferentes podem aparecer na mesma linha (o autorizado, quem
+concedeu, quem revogou) — cada uma só pode pedir os seus próprios dados,
+nunca os dos outros dois.
+
+`tests/event_test.php` e `tests/privacy_test.php` cobrem isto — a
+correr via `\core_privacy\tests\provider_testcase`, o padrão oficial de
+teste de privacy do Moodle/Totara.
 
 ## Achados pós-Fase-8 (teste manual em QA, 2026-08-27)
 

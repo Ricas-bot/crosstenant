@@ -325,15 +325,78 @@ class authorization_manager {
         return $context->tenantid ? (int) $context->tenantid : null;
     }
 
-    /** Placeholder intencional — implementado na Fase 10 (eventos/auditoria). */
+    /**
+     * Dispara o evento de concessão (secção 25/35). userid = quem
+     * concedeu (createdby); relateduserid = quem foi autorizado.
+     */
     protected static function trigger_granted_event(\stdClass $record): void {
+        $context = \context_course::instance($record->courseid, IGNORE_MISSING);
+        if (!$context) {
+            // Secção 36 — curso entretanto eliminado: não gerar erros.
+            return;
+        }
+
+        $event = \local_crosstenant\event\access_granted::create([
+            'objectid' => $record->id,
+            'context' => $context,
+            'relateduserid' => $record->userid,
+            'userid' => $record->createdby,
+            'other' => [
+                'source_tenantid' => (int) $record->source_tenantid,
+                'target_tenantid' => (int) $record->target_tenantid,
+                'roleid' => (int) $record->roleid,
+            ],
+        ]);
+        $event->add_record_snapshot('local_crosstenant_access', $record);
+        $event->trigger();
     }
 
-    /** Placeholder intencional — implementado na Fase 10 (eventos/auditoria). */
+    /**
+     * Dispara o evento de revogação. userid = quem revogou (revokedby);
+     * relateduserid = quem perdeu o acesso.
+     */
     protected static function trigger_revoked_event(\stdClass $record): void {
+        $context = \context_course::instance($record->courseid, IGNORE_MISSING);
+        if (!$context) {
+            return;
+        }
+
+        $event = \local_crosstenant\event\access_revoked::create([
+            'objectid' => $record->id,
+            'context' => $context,
+            'relateduserid' => $record->userid,
+            'userid' => $record->revokedby,
+            'other' => [
+                'source_tenantid' => (int) $record->source_tenantid,
+                'target_tenantid' => (int) $record->target_tenantid,
+            ],
+        ]);
+        $event->add_record_snapshot('local_crosstenant_access', $record);
+        $event->trigger();
     }
 
-    /** Placeholder intencional — implementado na Fase 10 (eventos/auditoria). */
+    /**
+     * Dispara o evento de expiração. userid = 0 (ação do sistema, via
+     * scheduled task — não há um ator humano); relateduserid = quem
+     * perdeu o acesso.
+     */
     protected static function trigger_expired_event(\stdClass $record): void {
+        $context = \context_course::instance($record->courseid, IGNORE_MISSING);
+        if (!$context) {
+            return;
+        }
+
+        $event = \local_crosstenant\event\access_expired::create([
+            'objectid' => $record->id,
+            'context' => $context,
+            'relateduserid' => $record->userid,
+            'userid' => 0,
+            'other' => [
+                'source_tenantid' => (int) $record->source_tenantid,
+                'target_tenantid' => (int) $record->target_tenantid,
+            ],
+        ]);
+        $event->add_record_snapshot('local_crosstenant_access', $record);
+        $event->trigger();
     }
 }

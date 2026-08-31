@@ -76,3 +76,23 @@ $string['confirmgranttitle'] = 'Confirmar Concessão de Acesso';
 $string['confirmgrantbody'] = 'Tem a certeza de que deseja conceder acesso cross-tenant ao utilizador {$a->user} do tenant {$a->tenant}? Isto irá criar uma instância de inscrição dedicada para o curso, e o utilizador será inscrito com o papel de {$a->role}.';
 $string['confirmrevoketitle'] = 'Confirmar Revogação de Acesso';
 $string['confirmrevokebody'] = 'Tem a certeza de que deseja revogar o acesso cross-tenant ao utilizador {$a->user} do tenant {$a->tenant}?';
+
+// Eventos de auditoria
+$string['event_access_granted'] = 'Acesso cross-tenant concedido';
+$string['event_access_revoked'] = 'Acesso cross-tenant revogado';
+
+// Metadados da API de Privacidade para conformidade com o RGPD. 
+$string['privacy:metadata:local_crosstenant_access'] = 'A tabela local_crosstenant_access armazena informações sobre concessões de acesso cross-tenant a cursos.';
+$string['privacy:metadata:local_crosstenant_access:userid'] = 'O ID do utilizador que foi concedido acesso cross-tenant a um curso.';
+$string['privacy:metadata:local_crosstenant_access:source_tenantid'] = 'O ID do tenant do utilizador que foi concedido acesso cross-tenant a um curso.';
+$string['privacy:metadata:local_crosstenant_access:target_tenantid'] = 'O ID do tenant do curso ao qual foi concedido acesso cross-tenant.';
+$string['privacy:metadata:local_crosstenant_access:courseid'] = 'O ID do curso ao qual foi concedido acesso cross-tenant.';
+$string['privacy:metadata:local_crosstenant_access:roleid'] = 'O ID do papel do utilizador que foi concedido acesso cross-tenant a um curso.';
+$string['privacy:metadata:local_crosstenant_access:status'] = 'O status da concessão de acesso cross-tenant.';
+$string['privacy:metadata:local_crosstenant_access:reason'] = 'O motivo para a concessão de acesso cross-tenant.';
+$string['privacy:metadata:local_crosstenant_access:timecreated'] = 'A hora em que a concessão de acesso cross-tenant foi criada.';
+$string['privacy:metadata:local_crosstenant_access:timemodified'] = 'A hora em que a concessão de acesso cross-tenant foi modificada.';
+$string['privacy:metadata:local_crosstenant_access:timeexpires'] = 'A hora em que a concessão de acesso cross-tenant expira.';
+$string['privacy:metadata:local_crosstenant_access:createdby'] = 'O ID do utilizador que criou a concessão de acesso cross-tenant.';
+$string['privacy:metadata:local_crosstenant_access:timerevoked'] = 'A hora em que a concessão de acesso cross-tenant foi revogada.';
+$string['privacy:metadata:local_crosstenant_access:revokedby'] = 'O ID do utilizador que revogou a concessão de acesso cross-tenant.';
