@@ -195,6 +195,43 @@ class authorization_manager {
     }
 
     /**
+     * Chamado pelo observer de \core\event\course_deleted (Fase 10,
+     * secção 36 — "limpar referências inválidas... não impedir a
+     * eliminação normal do curso"). Marca qualquer autorização "active"
+     * deste curso como "revoked" — nunca apaga a linha (preserva o
+     * histórico), e nunca chama enrolment_manager: o curso e as suas
+     * instâncias de inscrição já foram removidos pela própria eliminação
+     * do curso, e tentar mexer neles outra vez seria redundante ou
+     * geraria erro. Não dispara evento de revogação: já não existe
+     * contexto de curso válido para o associar (trigger_revoked_event já
+     * se protege sozinho contra isso, mas evitamos a chamada por clareza).
+     *
+     * Idempotente: chamar duas vezes não faz nada da segunda vez.
+     *
+     * @param int $courseid
+     * @return int número de autorizações marcadas como revoked
+     */
+    public static function handle_course_deleted(int $courseid): int {
+        global $DB;
+
+        $now = time();
+        $activerecords = $DB->get_records('local_crosstenant_access', [
+            'courseid' => $courseid,
+            'status' => self::STATUS_ACTIVE,
+        ]);
+
+        foreach ($activerecords as $record) {
+            $record->status = self::STATUS_REVOKED;
+            $record->timerevoked = $now;
+            $record->revokedby = 0; // Sistema — curso eliminado, sem ator humano.
+            $record->timemodified = $now;
+            $DB->update_record('local_crosstenant_access', $record);
+        }
+
+        return count($activerecords);
+    }
+
+    /**
      * Marca como expired as autorizações ativas cujo timeexpires já
      * passou. Chamado pela scheduled task (Fase 7), mas exposto aqui para
      * poder ser exercido diretamente por testes/CLI sem depender do
@@ -264,6 +301,15 @@ class authorization_manager {
         }
 
         if ($record->timeexpires !== null && $record->timeexpires < time()) {
+            return null;
+        }
+
+        // Secção 35 (Fase 10): a autorização pode continuar "active" para
+        // fins históricos, mas o acesso EFETIVO tem sempre de seguir o
+        // estado real do utilizador. Nunca reativar/restaurar o
+        // utilizador aqui — só recusar o acesso.
+        $userok = $DB->record_exists('user', ['id' => $userid, 'deleted' => 0, 'suspended' => 0]);
+        if (!$userok) {
             return null;
         }
 

@@ -17,7 +17,7 @@
 /**
  * Version descriptor for local_crosstenant.
  *
- * Fase 8: UI administrativa no curso
+ * Fase 10: Segurança
  *
  * @package    local_crosstenant
  * @copyright  2026 EDUdigital
@@ -27,7 +27,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_crosstenant';
-$plugin->version   = 2026083100;   // YYYYMMDDXX
+$plugin->version   = 2026090100;   // YYYYMMDDXX
 $plugin->requires  = 2020061500; // Moodle 3.9
 $plugin->maturity  = MATURITY_ALPHA;
-$plugin->release   = 'V1 - Fase 8 (UI administrativa no curso) - testada manualmente em QA';
+$plugin->release   = 'V1 - Fase 10 (segurança)';
